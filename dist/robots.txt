@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://seema.qa/sitemap.xml
