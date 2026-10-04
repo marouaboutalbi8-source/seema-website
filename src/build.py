@@ -307,6 +307,40 @@ def cta(p):
 </section>"""
 
 
+# Footer wordmark as a window: Doha photos cross-fade inside the SEEMA letters.
+FT_SHOTS = [
+    ("cs-dhows-fanar", "Mid", L("Doha Bay · Dhows at golden hour", "خليج الدوحة · المراكب عند الغروب")),
+    ("qa-mia-arches", "Mid", L("Museum of Islamic Art", "متحف الفن الإسلامي")),
+    ("svc-souq-stall", "Mid", L("Souq Waqif", "سوق واقف")),
+    ("qa-katara-towers", "Max", L("Katara Cultural Village", "الحي الثقافي كتارا")),
+    ("sv-hero-dhow", "Mid", L("West Bay from the water", "الخليج الغربي من البحر")),
+    ("qa-ghutra", "Mid", L("The white ghutra", "الغترة البيضاء")),
+]
+
+
+def ft_window(p):
+    s = svg_file("Seema_lat_bone.svg")
+    vb = re.search(r'viewBox="([^"]+)"', s).group(1)
+    g = re.search(r'<g transform="([^"]+)"', s).group(1)
+    paths = re.findall(r'<path transform="([^"]+)" d="([^"]+)"', s)
+    clip = "".join(f'<path transform="{g} {tr}" d="{d}"/>' for tr, d in paths)
+    _, _, w, h = vb.split()
+    shots = "".join(
+        f'<image class="ft-shot{" is-on" if i == 0 else ""}" data-href="{p.asset("img/" + n + ".jpg")}" '
+        f'x="0" y="0" width="{w}" height="{h}" preserveAspectRatio="xMidY{y} slice"/>'
+        for i, (n, y, _) in enumerate(FT_SHOTS))
+    return (f'<svg class="ft-win" viewBox="{vb}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SEEMA">'
+            f'<defs><clipPath id="ft-clip">{clip}</clipPath></defs>'
+            f'<g class="ft-base" fill="currentColor">{clip}</g>'
+            f'<g clip-path="url(#ft-clip)">{shots}</g></svg>')
+
+
+def ft_window_cap(p):
+    caps = "".join(f'<span class="ft-cap{" is-on" if i == 0 else ""}">{esc(p.t(c))}</span>' for i, (_, _, c) in enumerate(FT_SHOTS))
+    ticks = "".join(f'<i class="{"is-on" if i == 0 else ""}"><b></b></i>' for i in range(len(FT_SHOTS)))
+    return f'<div class="ft-win-meta"><span class="ft-caps cap">{caps}</span><span class="ft-ticks">{ticks}</span></div>'
+
+
 def footer(p):
     t = p.t
     ol = p.ol
@@ -322,7 +356,7 @@ def footer(p):
       <div class="ft-col"><p class="cap">{esc(t(FOOTER['contact']))}</p><span dir="ltr">{SITE['email']}</span><span>{SITE['web']}</span><span>{esc(t(SITE['city']))}</span>
         <a class="lang" href="{p.alt_href()}" hreflang="{ol}" lang="{ol}"><span class="bi-{ol}">{esc(t(UI['lang_other']))}</span></a></div>
     </div>
-    <div class="ft-mark" aria-hidden="true"><span class="lat">{logo_svg("Seema_lat_bone.svg", "SEEMA")}</span><span class="ar">{logo_svg("Seema_ar_bone.svg", "سيمة")}</span></div>
+    <div class="ft-mark" aria-hidden="true"><span class="lat">{ft_window(p)}</span><span class="ar">{logo_svg("Seema_ar_bone.svg", "سيمة")}</span>{ft_window_cap(p)}</div>
     <div class="ft-bottom">
       <span>{esc(SITE['registered']['en'])}</span><span class="bi-ar" lang="ar">{esc(SITE['registered']['ar'])}</span>
       <span>{esc(t(FOOTER['rights']))}</span>

@@ -379,7 +379,24 @@ html[lang="ar"] .copy-btn { font-family: var(--f-ar-t); font-size: .88rem; lette
 .ft-mark { margin-block: clamp(4rem, 8vw, 7rem) 2.4rem; color: var(--cloud); display: grid; grid-template-columns: 1fr auto; align-items: end; gap: clamp(20px, 4vw, 64px); }
 .ft-mark .lat svg { width: 100%; height: auto; }
 .ft-mark .ar svg { width: clamp(90px, 13vw, 220px); height: auto; }
-html[dir="rtl"] .ft-mark { grid-template-columns: auto 1fr; }
+/* footer wordmark as a photo window */
+.ft-win .ft-base { opacity: 1; transition: opacity 1.2s ease; }
+.ft-win.is-live .ft-base { opacity: .08; }
+.ft-win .ft-shot { opacity: 0; transition: opacity 1.4s ease; transform-box: fill-box; transform-origin: 50% 50%; }
+.ft-win .ft-shot.is-on { opacity: 1; animation: ftDrift 7s ease-out both; }
+@keyframes ftDrift { from { transform: scale(1.14) translateX(-1.5%); } to { transform: scale(1.02) translateX(0); } }
+.ft-win-meta { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 1.2rem; margin-block-start: -.4rem; }
+.ft-caps { display: grid; color: var(--on-dark-2); }
+.ft-cap { grid-area: 1 / 1; opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s ease; }
+.ft-cap.is-on { opacity: 1; transform: none; transition-delay: .3s; }
+html[dir="rtl"] .ft-cap { font-family: var(--f-ar-t); letter-spacing: 0; text-transform: none; font-size: .92rem; }
+.ft-ticks { display: flex; gap: 6px; }
+.ft-ticks i { display: block; width: 22px; height: 3px; background: var(--hair-dark); overflow: hidden; }
+.ft-ticks b { display: block; height: 100%; width: 100%; background: var(--saffron); transform: scaleX(0); transform-origin: 0 50%; }
+html[dir="rtl"] .ft-ticks b { transform-origin: 100% 50%; }
+.ft-ticks i.is-done b { transform: scaleX(1); }
+.ft-ticks i.is-on b { animation: ftTick var(--ft-dur, 4.2s) linear both; }
+@keyframes ftTick { to { transform: scaleX(1); } }
 .ft-bottom { display: flex; justify-content: space-between; gap: 1.2rem 3rem; flex-wrap: wrap; color: var(--on-dark-3); font-size: .82rem; border-top: 1px solid var(--hair-dark); padding-top: 1.6rem; }
 .ft-bottom .bi-ar { font-size: .92rem; }
 

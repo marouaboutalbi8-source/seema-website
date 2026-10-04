@@ -456,3 +456,32 @@
   window.addEventListener("resize", frame);
   frame();
 })();
+
+/* footer wordmark: photos cross-fade inside the letters */
+(function () {
+  var win = document.querySelector(".ft-win"); if (!win) return;
+  var shots = [].slice.call(win.querySelectorAll(".ft-shot"));
+  var caps = [].slice.call(document.querySelectorAll(".ft-cap"));
+  var ticks = [].slice.call(document.querySelectorAll(".ft-ticks i"));
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var DUR = 4200, k = 0, timer = null, loaded = false;
+  function load() {
+    if (loaded) return; loaded = true;
+    shots.forEach(function (im) { var h = im.getAttribute("data-href"); im.setAttribute("href", h); im.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", h); });
+    var first = new Image(); first.onload = function () { win.classList.add("is-live"); }; first.src = shots[0].getAttribute("data-href");
+  }
+  function show(n) {
+    k = n;
+    [shots, caps].forEach(function (list) { list.forEach(function (x, j) { x.classList.toggle("is-on", j === k); }); });
+    ticks.forEach(function (t, j) { t.classList.remove("is-on"); t.classList.toggle("is-done", j < k); void t.offsetWidth; if (j === k) t.classList.add("is-on"); });
+  }
+  function play() { if (timer || reduce) return; timer = setInterval(function () { show((k + 1) % shots.length); }, DUR); }
+  function stop() { clearInterval(timer); timer = null; }
+  document.documentElement.style.setProperty("--ft-dur", DUR + "ms");
+  if (!("IntersectionObserver" in window)) { load(); play(); return; }
+  new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (e.isIntersecting) { load(); show(k); play(); } else stop();
+    });
+  }, { rootMargin: "300px 0px" }).observe(win);
+})();
